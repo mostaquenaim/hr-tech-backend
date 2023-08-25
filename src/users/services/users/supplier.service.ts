@@ -1,9 +1,8 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Post } from '../../../typeorm/entities/Post';
 import { Profile } from '../../../typeorm/entities/Profile';
-import { User } from '../../../typeorm/entities/User';
 import {
   CreateUserParams,
   CreateUserPostParams,
@@ -21,16 +20,12 @@ import { Order } from 'src/typeorm/entities/Order';
 import { Mngorder } from 'src/typeorm/entities/ManagementOrder';
 import { UpdateProfileDto } from 'src/users/dtos/UpdateProfile.dto';
 import { SignInDto } from 'src/users/dtos/CreateSignIn.dto';
-import { Customer } from 'src/typeorm/entities/customer';
-import { CustomerReview } from 'src/typeorm/entities/customerReviews';
-import { Company } from 'src/typeorm/entities/company';
-import { Product } from 'src/typeorm/entities/product';
-import { ProductCategory } from 'src/typeorm/entities/productCat';
+import { Supplier } from 'src/typeorm/entities/supplier';
 
 
 
 @Injectable()
-export class UsersService {
+export class SupplierService {
   updateOrderStatus(orderId: number, status: string) {
     throw new Error('Method not implemented.');
   }
@@ -42,31 +37,24 @@ export class UsersService {
   }
   
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Supplier) private supplierRepository: Repository<Supplier>,
     @InjectRepository(Profile) private profileRepository: Repository<Profile>,
     @InjectRepository(Post) private postRepository: Repository<Post>,
     @InjectRepository(Vehicle) private  vehicleRepository: Repository<Vehicle>,
     @InjectRepository(Schedule) private scheduleRepository: Repository<Schedule>,
     @InjectRepository(Order) private orderRepository: Repository<Order>,
     @InjectRepository(Mngorder) private mngorderRepository: Repository<Mngorder>,
-    @InjectRepository(Customer) private customerRepository: Repository<Customer>,
-    @InjectRepository(CustomerReview) private customerReviewRepository: Repository<CustomerReview>,
-    @InjectRepository(Company) private companyRepository: Repository<Company>,
-    @InjectRepository(Product) private productRepository: Repository<Product>,
-    @InjectRepository(ProductCategory) private productCategoryRepository: Repository<ProductCategory>,
+
     
   ) {}
 
   findUsers() {
-    return this.userRepository.find({ relations: ['profile', 'posts', 'vehicles', 'schedules', 'orders', 'mngorders'] });
+    return this.supplierRepository.find({ relations: ['profile', 'posts', 'vehicles', 'schedules', 'orders', 'mngorders'] });
   }
-
-
-
 //get user by id
 
-async getUserById(id: number): Promise<User> {
-  const user = await this.userRepository.findOneBy({id});
+async getUserById(id: number): Promise<Supplier> {
+  const user = await this.supplierRepository.findOneBy({id});
 
   if (!user) {
     throw new NotFoundException(`User with ID ${id} not found.`);
@@ -76,35 +64,6 @@ async getUserById(id: number): Promise<User> {
 }
 
 
-
-
-//get all customer reviews
-async getAllCustomerReviews() {
-      const options: FindManyOptions<CustomerReview> = {};
-      const reviews = await this.customerReviewRepository.find(options);
-      return reviews;
-}
-
-// get all products 
-async getProducts() {
-      const options: FindManyOptions<Product> = {};
-      const products = await this.productRepository.find(options);
-      return products;
-}
-
-// get all product categories
-async getProductCategories() {
-      const options: FindManyOptions<ProductCategory> = {};
-      const categories = await this.productCategoryRepository.find(options);
-      return categories;
-}
-
-// get company details 
-async getCompanyDetails() {
-      const options: FindManyOptions<Company> = {};
-      const details = await this.companyRepository.find(options);
-      return details;
-}
 
 
 //get order by id
@@ -120,6 +79,7 @@ async getOrderById(id: number): Promise<Order> {
 }
 
 //get manage order by id
+
 
 async getmngOrderById(id: number): Promise<Mngorder> {
   const mngorder = await this.mngorderRepository.findOneBy({id});
@@ -138,22 +98,22 @@ async getmngOrderById(id: number): Promise<Mngorder> {
 
   //signin
   createUser(userDetails: CreateUserParams) {
-    const newUser = this.userRepository.create({
+    const newUser = this.supplierRepository.create({
       ...userDetails,
       createdAt: new Date(),
     });
-    return this.userRepository.save(newUser);
+    return this.supplierRepository.save(newUser);
   }
 
   
 async updateUser(id: number, updateUserDetails: UpdateUserParams): Promise<void> {
-  const user = await this.userRepository.findOneBy({id});
+  const user = await this.supplierRepository.findOneBy({id});
 
   if (!user) {
     throw new NotFoundException(`User with ID ${id} not found.`);
   }
 
-  await this.userRepository.update(id, { ...updateUserDetails });
+  await this.supplierRepository.update(id, { ...updateUserDetails });
 }
 
  
@@ -172,13 +132,13 @@ async updateUserProfile(id: number, updateProfileDetails: UpdateProfileParams): 
 
 //delete user
 async deleteUser(id: number): Promise<void> {
-  const user = await this.userRepository.findOneBy({id});
+  const user = await this.supplierRepository.findOneBy({id});
 
   if (!user) {
     throw new NotFoundException(`User with ID ${id} not found.`);
   }
 
-  await this.userRepository.delete(id);
+  await this.supplierRepository.delete(id);
 }
 
 
@@ -187,7 +147,7 @@ async deleteUser(id: number): Promise<void> {
   //   id: number,
   //   createUserProfileDetails: CreateUserProfileParams,
   // ) {
-  //   const user = await this.userRepository.findOneBy({ id });
+  //   const user = await this.supplierRepository.findOneBy({ id });
   //   if (!user)
   //     throw new HttpException(
   //       'User not found. Cannot create Profile',
@@ -196,14 +156,14 @@ async deleteUser(id: number): Promise<void> {
   //   const newProfile = this.profileRepository.create(createUserProfileDetails);
   //   const savedProfile = await this.profileRepository.save(newProfile);
   //   user.profile = savedProfile;
-  //   return this.userRepository.save(user);
+  //   return this.supplierRepository.save(user);
   // }
 
   async createUserPost(
     id: number,
     createUserPostDetails: CreateUserPostParams,
   ) {
-    const user = await this.userRepository.findOneBy({ id });
+    const user = await this.supplierRepository.findOneBy({ id });
     if (!user)
       throw new HttpException(
         'User not found. Cannot create Post',
@@ -221,7 +181,7 @@ async createUserVehicle(
   id: number,
   createUserVehicleDetails: CreateVehicleParams,
 ) {
-  const user = await this.userRepository.findOneBy({ id });
+  const user = await this.supplierRepository.findOneBy({ id });
   if (!user)
     throw new HttpException(
       'User not found. Cannot Add Vehicle Information',
@@ -239,7 +199,7 @@ async createUserSchedule(
   id: number,
   createUserScheduleDetails:  CreateScheduleParams,
 ) {
-  const user = await this.userRepository.findOneBy({ id });
+  const user = await this.supplierRepository.findOneBy({ id });
   if (!user)
     throw new HttpException(
       'User not found. Cannot Add Schedule',
@@ -258,7 +218,7 @@ async createUserOrder(
   id: number,
   createUserOrderDetails:  CreateOrderParams,
 ) {
-  const user = await this.userRepository.findOneBy({ id });
+  const user = await this.supplierRepository.findOneBy({ id });
   if (!user)
     throw new HttpException(
       'Deliveryman not found. Cannot Assign Order',
@@ -278,7 +238,7 @@ async createMngOrder(
   id: number,
   createMngOrderDetails:  CreateMngOrderParams,
 ) {
-  const user = await this.userRepository.findOneBy({ id });
+  const user = await this.supplierRepository.findOneBy({ id });
   if (!user)
     throw new HttpException(
       'Deliveryman not found. Cannot Assign Management Order',
@@ -297,11 +257,10 @@ async createMngOrder(
 
 //signup
 
-async signIn(signInDto: SignInDto): Promise<User> {
+async signIn(signInDto: SignInDto): Promise<Supplier> {
   const { email, password } = signInDto;
 
-  const user = await this.userRepository.findOneBy({ email });
-  console.log(user)
+  const user = await this.supplierRepository.findOneBy({ email });
 
   if (!user || user.password !== password) {
     throw new UnauthorizedException('Invalid credentials');

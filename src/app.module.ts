@@ -13,6 +13,13 @@ import { Order } from './typeorm/entities/Order';
 import { Mngorder } from './typeorm/entities/ManagementOrder';
 
 import { Service } from './.service';
+import { SupplierController } from './users/controllers/users/supplier.controller';
+import { Supplier } from './typeorm/entities/supplier';
+import { Product } from './typeorm/entities/product';
+import { Customer } from './typeorm/entities/customer';
+import { CustomerReview } from './typeorm/entities/customerReviews';
+import { Company } from './typeorm/entities/company';
+import { ProductCategory } from './typeorm/entities/productCat';
 
 
 
@@ -24,9 +31,9 @@ import { Service } from './.service';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'postgres',
-      database: 'deliveryman',
-      entities: [User, Profile, Post, Vehicle, Schedule, Order, Mngorder],
+      password: 'root',
+      database: 'hrtech',
+      entities: [User, Profile, Post, CustomerReview,ProductCategory, Vehicle,Company, Schedule, Order, Mngorder, Supplier, Product, Customer],
       synchronize: true,
     }),
     UsersModule,
@@ -36,3 +43,4 @@ import { Service } from './.service';
   providers: [AppService,PusherService, Service],
 })
 export class AppModule {}
+

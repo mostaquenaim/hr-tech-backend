@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { User } from './User';
+import { Supplier } from './supplier';
 
 @Entity({name: 'mng_order'})
 export class Mngorder {
@@ -16,4 +17,6 @@ export class Mngorder {
 
   @ManyToOne(() => User, (user) => user.mngorders)
   user: User;
+  @ManyToOne(() => Supplier, (supplier) => supplier.mngorders)
+  supplier: Supplier;
 }

@@ -22,6 +22,12 @@ export class User {
   username: string;
 
   @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
+
+  @Column()
   email:string;
 
   @Column()
@@ -31,11 +37,8 @@ export class User {
   createdAt: Date;
 
   @Column({ nullable: true })
-   authStrategy: string;
+  authStrategy: string;
 
-  @OneToOne(() => Profile)
-  @JoinColumn()
-  profile: Profile;
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];

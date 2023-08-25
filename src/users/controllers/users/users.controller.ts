@@ -7,8 +7,10 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
+  Res,
   UploadedFile,
   UseInterceptors,
   UsePipes,
@@ -40,12 +42,51 @@ export class UsersController {
   getUsers() {
     return this.userService.findUsers();
   }
+
+  @Get('/customerReviews')
+  async getAllCustomerReviews() {
+    return this.userService.getAllCustomerReviews();
+  }
+
+
+  @Get('/companyDetails')
+  async getCompanyDetails() {
+    return this.userService.getCompanyDetails();
+  }
+
+  @Get('/products')
+  async getProducts() {
+    return this.userService.getProducts();
+  }
+
+  @Get('/productCategories')
+  async getProductCategories() {
+    return this.userService.getProductCategories();
+  }
+
+
+
+
 //get user by id
 
 @Get(':id')
   async getUserById(@Param('id') id: number) {
     return this.userService.getUserById(id);
   }
+
+  // get product image 
+  @Get('/getProductImage/:name')
+  getProductImage(@Param('name') name, @Res() res) {
+    res.sendFile(name,{ root: './uploads' })
+  }
+
+  // get product image 
+  // @Get('/getProductImage/:name')
+  // getImage(@Param('name') name, @Res() res) {
+  //   res.sendFile(name,{ root: './uploads' })
+  // }
+
+
 
 
 //get order by id
@@ -61,20 +102,23 @@ export class UsersController {
   }
 
 //create user
-  @Post()
+  @Post('create')
   @UsePipes(ValidationPipe)
   createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
   }
-//update username pass email by id
-  @Put(':id')
+
+//update profile by id
+  @Put('update/:id')
   @UsePipes(ValidationPipe)
   async updateUserById(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() myDto: UpdateUserDto,
   ) {
-    await this.userService.updateUser(id, updateUserDto);
+    console.log("ashche")
+    await this.userService.updateUser(id, myDto);
   }
+  
 
 //updateUserProfile By Id
 @Put(':id/profiles')
@@ -92,15 +136,17 @@ async updateProfileById(
   async deleteUserById(@Param('id', ParseIntPipe) id: number) {
     await this.userService.deleteUser(id);
   }
+
+
 //create profile
-  @Post(':id/profiles')
-  @UsePipes(ValidationPipe)
-  createUserProfile(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() createUserProfileDto: CreateUserProfileDto,
-  ) {
-    return this.userService.createUserProfile(id, createUserProfileDto);
-  }
+  // @Post(':id/profiles')
+  // @UsePipes(ValidationPipe)
+  // createUserProfile(
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Body() createUserProfileDto: CreateUserProfileDto,
+  // ) {
+  //   return this.userService.createUserProfile(id, createUserProfileDto);
+  // }
 //users post by id
   @Post(':id/posts')
   @UsePipes(ValidationPipe)
@@ -115,7 +161,6 @@ async updateProfileById(
 
   
 //create vehicle by id
-
 
 
   @Post(':id/vehicles')
@@ -204,6 +249,7 @@ createMngOrder(
 @Post('signin')
 @UsePipes(ValidationPipe)
 async signIn(@Body() signInDto: SignInDto) {
+  console.log("abcd")
   return this.userService.signIn(signInDto);
 }
 

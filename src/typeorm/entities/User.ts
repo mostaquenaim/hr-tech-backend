@@ -12,6 +12,8 @@ import { Vehicle } from './Vehicle';
 import {Schedule } from  './Schedule';
 import { Order } from './Order';
 import { Mngorder } from './ManagementOrder';
+import { DeliverymanFeedback } from './deliverymanFeedback';
+import { DeliverymanSupport } from './deliverymanSupport';
 
 @Entity({ name: 'users' })
 export class User {
@@ -46,8 +48,14 @@ export class User {
   @OneToMany(() => Vehicle, (vehicle) => vehicle.user)
   vehicles: Vehicle[];
 
+  @OneToMany(() => DeliverymanSupport, (deliverymanSupport) => deliverymanSupport.user)
+  deliverymanSupports: DeliverymanSupport[];
+
   @OneToMany(() => Schedule, (schedule) => schedule.user)
   schedules: Post[];
+
+  @OneToMany(() => DeliverymanFeedback, (deliverymanFeedback) => deliverymanFeedback.user)
+  deliverymanFeedbacks: DeliverymanFeedback[];
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];

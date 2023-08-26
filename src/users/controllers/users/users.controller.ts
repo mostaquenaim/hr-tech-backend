@@ -15,6 +15,8 @@ import {
   UseInterceptors,
   UsePipes,
   ValidationPipe,
+  Session,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from '../../dtos/CreateUser.dto';
 import { CreateUserPostDto } from '../../dtos/CreateUserPost.dto';
@@ -30,24 +32,53 @@ import { CreateMngOrderDto } from 'src/users/dtos/CreateMngOrder.Dto';
 import { UpdateProfileDto } from 'src/users/dtos/UpdateProfile.dto';
 import { OrderStatusUpdateDto } from 'src/users/dtos/OrderStatusUpdate.dto';
 import { SignInDto } from 'src/users/dtos/CreateSignIn.dto';
-
+import session from "express-session";
 
 
 @Controller('users')
 export class UsersController {
-  constructor(private userService: UsersService) {}
-  
+  constructor(private userService: UsersService) { }
 
-  @Get()
-  getUsers() {
-    return this.userService.findUsers();
+
+  
+  //get vehicle by 
+  @Get('vehicles')
+  @UsePipes(ValidationPipe)
+  getVehicle( 
+    @Body('email') email,
+    @Session() session,
+  ) {
+    return this.userService.getUserVehicle(email);
   }
+
+  
+  //get vehicle by id
+  @Get('vehicles/:id')
+  @UsePipes(ValidationPipe)
+  getVehicleById( 
+    @Param('id') id ,
+    @Session() session,
+  ) {
+    return this.userService.getVehicleById(id);
+  }
+
+  
+  @Get('findUserByEmail')
+  getUserByEmail(@Body() body) {
+    return this.userService.findUserByEmail(body);
+  }
+
+
 
   @Get('/customerReviews')
   async getAllCustomerReviews() {
     return this.userService.getAllCustomerReviews();
   }
 
+  @Get('getAllOrders')
+  async getAllOrder() {
+    return this.userService.getAllOrder();
+  }
 
   @Get('/companyDetails')
   async getCompanyDetails() {
@@ -65,11 +96,8 @@ export class UsersController {
   }
 
 
-
-
-//get user by id
-
-@Get(':id')
+  //get user by id
+  @Get(':id')
   async getUserById(@Param('id') id: number) {
     return this.userService.getUserById(id);
   }
@@ -77,7 +105,7 @@ export class UsersController {
   // get product image 
   @Get('/getProductImage/:name')
   getProductImage(@Param('name') name, @Res() res) {
-    res.sendFile(name,{ root: './uploads' })
+    res.sendFile(name, { root: './uploads' })
   }
 
   // get product image 
@@ -89,26 +117,46 @@ export class UsersController {
 
 
 
-//get order by id
-@Get(':id/order')
+  //get order by id
+  @Get('/order/:id')
   async getOrderById(@Param('id') id: number) {
     return this.userService.getOrderById(id);
   }
 
-//get mng order by id
-@Get(':id/mngorder')
+  //get mng order by id
+  @Get(':id/mngorder')
   async getmngOrderById(@Param('id') id: number) {
     return this.userService.getmngOrderById(id);
   }
 
-//create user
+
+
+  //create user
   @Post('create')
   @UsePipes(ValidationPipe)
   createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
   }
 
-//update profile by id
+  // add feedback 
+  @Post(':id/addFeedback')
+  createFeedback(
+    @Param('id') id,
+    @Body() feedbackDto, @Session() session) {
+    return this.userService.createFeedback(feedbackDto, id);
+  }
+
+  // support 
+  @Post(':id/support')
+  createSupport(
+    @Param('id') id,
+    @Body() feedbackDto, @Session() session) {
+    return this.userService.createSupport(feedbackDto, id);
+  }
+
+
+
+  //update profile by id
   @Put('update/:id')
   @UsePipes(ValidationPipe)
   async updateUserById(
@@ -118,27 +166,46 @@ export class UsersController {
     console.log("ashche")
     await this.userService.updateUser(id, myDto);
   }
-  
 
-//updateUserProfile By Id
-@Put(':id/profiles')
-@UsePipes(ValidationPipe)
-async updateProfileById(
-  @Param('id', ParseIntPipe) id: number,
-  @Body() updateProfileDto: UpdateProfileDto,
-) {
-  await this.userService.updateUserProfile(id, updateProfileDto);
-}
+  //update vehicle by id
+  @Put('updateVehicle/:id')
+  @UsePipes(ValidationPipe)
+  async updateVehicle
+    (
+      @Param('id', ParseIntPipe) id: number,
+      @Body() myDto,
+    ) {
+    console.log("ashche")
+    await this.userService.updateVehicle(id, myDto);
+  }
+
+  //updateUserProfile By Id
+  @Put(':id/profiles')
+  @UsePipes(ValidationPipe)
+  async updateProfileById(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
+    await this.userService.updateUserProfile(id, updateProfileDto);
+  }
 
 
-//delete user by id
+  //delete user by id
   @Delete(':id')
   async deleteUserById(@Param('id', ParseIntPipe) id: number) {
     await this.userService.deleteUser(id);
   }
 
+  // delete vehicle by id 
+  @Delete('deleteVehicle/:id')
+  async deleteVehicleById(@Param('id', ParseIntPipe) id: number) {
+    await this.userService.deleteVehicleById(id);
+  }
 
-//create profile
+
+
+
+  //create profile
   // @Post(':id/profiles')
   // @UsePipes(ValidationPipe)
   // createUserProfile(
@@ -147,7 +214,7 @@ async updateProfileById(
   // ) {
   //   return this.userService.createUserProfile(id, createUserProfileDto);
   // }
-//users post by id
+  //users post by id
   @Post(':id/posts')
   @UsePipes(ValidationPipe)
   createUserPost(
@@ -159,84 +226,84 @@ async updateProfileById(
 
 
 
-  
-//create vehicle by id
 
-
+  //create vehicle by id
   @Post(':id/vehicles')
   @UsePipes(ValidationPipe)
   createUserVehicle(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id,
+    @Session() session,
     @Body() createUserVehicleDto: CreateVehicleDto,
   ) {
     return this.userService.createUserVehicle(id, createUserVehicleDto);
   }
 
 
-//file upload
+
+  //file upload
 
 
 
-@Post(('/upload'))
-@UseInterceptors(FileInterceptor('myfile',
-{ fileFilter: (req, file, cb) => {
-    if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
-     cb(null, true);
-    else {
-    cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
+  @Post(('/upload'))
+  @UseInterceptors(FileInterceptor('myfile',
+    {
+      fileFilter: (req, file, cb) => {
+        if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
+          cb(null, true);
+        else {
+          cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
+        }
+      },
+      limits: { fileSize: 30000 },
+      storage: diskStorage({
+        destination: './uploads',
+        filename: function (req, file, cb) {
+          cb(null, Date.now() + file.originalname)
+        },
+      })
     }
-    },
-    limits: { fileSize: 30000 },
-    storage:diskStorage({
-    destination: './uploads',
-    filename: function (req, file, cb) {
-    cb(null,Date.now()+file.originalname)
-    },
-    })
-    }
-))
-uploadFile(@UploadedFile() myfileobj: Express.Multer.File):object
-{
- console.log(myfileobj)   
-return ({message:"file uploaded"});
-}
+  ))
+  uploadFile(@UploadedFile() myfileobj: Express.Multer.File): object {
+    console.log(myfileobj)
+    return ({ message: "file uploaded" });
+  }
 
-//schedule
+  //schedule
 
 
-@Post(':id/schedules')
-@UsePipes(ValidationPipe)
-createUserSchedule(
-  @Param('id', ParseIntPipe) id: number,
-  @Body() createScheduleDto: CreateScheduleDto,
-) {
-  return this.userService.createUserSchedule(id, createScheduleDto);
-}
+  @Post(':id/schedules')
+  @UsePipes(ValidationPipe)
+  createUserSchedule(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() createScheduleDto: CreateScheduleDto,
+  ) {
+    return this.userService.createUserSchedule(id, createScheduleDto);
+  }
 
-//create order
-@Post(':id/orders')
-@UsePipes(ValidationPipe)
-createUserOrder(
-  @Param('id', ParseIntPipe) id: number,
-  @Body() createOrderDto: CreateOrderDto,
-) {
-  return this.userService.createUserOrder(id, createOrderDto);
-}
+  //create order
+  @Post(':id/orders')
+  @UsePipes(ValidationPipe)
+  createUserOrder(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() createOrderDto: CreateOrderDto,
+  ) {
+    return this.userService.createUserOrder(id, createOrderDto);
+  }
 
-//management_order
-@Post(':id/mngorders')
-@UsePipes(ValidationPipe)
-createMngOrder(
-  @Param('id', ParseIntPipe) id: number,
-  @Body() createMngOrderDto: CreateMngOrderDto,
-) {
-  return this.userService.createMngOrder(id, createMngOrderDto);
-}
+  //management_order
+  @Post(':id/mngorders')
+  @UsePipes(ValidationPipe)
+  createMngOrder(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() createMngOrderDto: CreateMngOrderDto,
+  ) {
+    return this.userService.createMngOrder(id, createMngOrderDto);
+  }
 
 
-//order status
+  //order status
 
-@Put(':id/status')
+  @Put(':id/status')
   updateOrderStatus(
     @Param('id') id: number,
     @Body() orderStatusUpdateDto: OrderStatusUpdateDto,
@@ -245,7 +312,7 @@ createMngOrder(
   }
 
 
-//signin
+  //signin
 @Post('signin')
 @UsePipes(ValidationPipe)
 async signIn(@Body() signInDto: SignInDto) {

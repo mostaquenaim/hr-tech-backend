@@ -26,6 +26,8 @@ import { CustomerReview } from 'src/typeorm/entities/customerReviews';
 import { Company } from 'src/typeorm/entities/company';
 import { Product } from 'src/typeorm/entities/product';
 import { ProductCategory } from 'src/typeorm/entities/productCat';
+import { DeliverymanFeedback } from 'src/typeorm/entities/deliverymanFeedback';
+import { DeliverymanSupport } from 'src/typeorm/entities/deliverymanSupport';
 
 
 
@@ -54,6 +56,8 @@ export class UsersService {
     @InjectRepository(Company) private companyRepository: Repository<Company>,
     @InjectRepository(Product) private productRepository: Repository<Product>,
     @InjectRepository(ProductCategory) private productCategoryRepository: Repository<ProductCategory>,
+    @InjectRepository(DeliverymanFeedback) private feedbackRepository: Repository<DeliverymanFeedback>,
+    @InjectRepository(DeliverymanSupport) private supportRepository: Repository<DeliverymanSupport>,
     
   ) {}
 
@@ -75,14 +79,18 @@ async getUserById(id: number): Promise<User> {
   return  user;
 }
 
-
-
-
 //get all customer reviews
 async getAllCustomerReviews() {
       const options: FindManyOptions<CustomerReview> = {};
       const reviews = await this.customerReviewRepository.find(options);
       return reviews;
+}
+
+//get all order
+async getAllOrder() {
+      const options: FindManyOptions<Order> = {};
+      const orders = await this.orderRepository.find(options);
+      return orders;
 }
 
 // get all products 
@@ -108,7 +116,6 @@ async getCompanyDetails() {
 
 
 //get order by id
-
 async getOrderById(id: number): Promise<Order> {
   const order = await this.orderRepository.findOneBy({id});
 
@@ -120,7 +127,6 @@ async getOrderById(id: number): Promise<Order> {
 }
 
 //get manage order by id
-
 async getmngOrderById(id: number): Promise<Mngorder> {
   const mngorder = await this.mngorderRepository.findOneBy({id});
 
@@ -133,9 +139,6 @@ async getmngOrderById(id: number): Promise<Mngorder> {
 
 
 
-
-
-
   //signin
   createUser(userDetails: CreateUserParams) {
     const newUser = this.userRepository.create({
@@ -145,7 +148,36 @@ async getmngOrderById(id: number): Promise<Mngorder> {
     return this.userRepository.save(newUser);
   }
 
-  
+  // feedback 
+  async createFeedback(myDto, id){
+
+    const user = await this.userRepository.findOneBy({ id });
+
+    const userAccount = new DeliverymanFeedback()
+
+    userAccount.feedback = myDto.feedback;
+    userAccount.user = user
+
+    return this.feedbackRepository.save(userAccount);
+  }
+
+
+  // support 
+  async createSupport(myDto, id){
+
+    const user = await this.userRepository.findOneBy({ id });
+
+    const userAccount = new DeliverymanSupport()
+
+    userAccount.support = myDto.support;
+    userAccount.user = user
+
+    return this.supportRepository.save(userAccount);
+  }
+
+
+
+  // update user 
 async updateUser(id: number, updateUserDetails: UpdateUserParams): Promise<void> {
   const user = await this.userRepository.findOneBy({id});
 
@@ -154,6 +186,38 @@ async updateUser(id: number, updateUserDetails: UpdateUserParams): Promise<void>
   }
 
   await this.userRepository.update(id, { ...updateUserDetails });
+}
+
+  // update vehicle 
+async updateVehicle(id: number, vehicle): Promise<void> {
+
+  const user = await this.vehicleRepository.findOneBy({id});
+
+  if (!user) {
+    throw new NotFoundException(`User with ID ${id} not found.`);
+  }
+
+  await this.vehicleRepository.update(id, { ...vehicle });
+}
+
+  // get vehicle 
+async getUserVehicle(email) {
+
+  const users = await this.userRepository.findOneBy({ email : email });
+
+  return this.vehicleRepository.find({
+    where: {
+      user: users,
+    },
+  });
+  
+}
+
+  // get vehicle by id
+async getVehicleById(id) {
+
+  return await this.vehicleRepository.findOneBy({ id });
+  
 }
 
  
@@ -180,6 +244,20 @@ async deleteUser(id: number): Promise<void> {
 
   await this.userRepository.delete(id);
 }
+
+//delete vehicle by id
+async deleteVehicleById(id: number): Promise<void> {
+
+  const user = await this.vehicleRepository.findOneBy({id});
+
+  if (!user) {
+    throw new NotFoundException(`User with ID ${id} not found.`);
+  }
+
+  await this.vehicleRepository.delete(id);
+}
+
+
 
 
 
@@ -218,7 +296,7 @@ async deleteUser(id: number): Promise<void> {
 
 //creating vehicle info
 async createUserVehicle(
-  id: number,
+  id , 
   createUserVehicleDetails: CreateVehicleParams,
 ) {
   const user = await this.userRepository.findOneBy({ id });
@@ -233,6 +311,8 @@ async createUserVehicle(
   });
   return this.vehicleRepository.save(newVehicle);
 }
+
+
   
 //creatingSchedule
 async createUserSchedule(
@@ -308,6 +388,18 @@ async signIn(signInDto: SignInDto): Promise<User> {
   }
 
   return user;
+}
+
+// find user by email 
+
+async findUserByEmail(myDto): Promise<User> {
+  const user = await this.userRepository.findOneBy({email : myDto.email});
+
+  if (!user) {
+    throw new NotFoundException(`User with ID ${myDto.email} not found.`);
+  }
+
+  return  user;
 }
 
 

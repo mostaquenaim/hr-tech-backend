@@ -33,7 +33,7 @@ export type CreateUserPostParams = {
 };
 
 export type CreateVehicleParams = {
-  make: string;
+  company: string;
   model: string;
   year: number;
   // Additional properties can be added as needed

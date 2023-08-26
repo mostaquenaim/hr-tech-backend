@@ -2,7 +2,7 @@ import { IsNotEmpty } from "class-validator";
 
 export class CreateVehicleDto {
     @IsNotEmpty()
-    make: string;
+    company: string;
 
     @IsNotEmpty()
     model: string;

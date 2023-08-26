@@ -10,7 +10,7 @@ export class Vehicle {
   id: number;
 
   @Column()
-  make: string;
+  company: string;
 
   @Column()
   model: string;

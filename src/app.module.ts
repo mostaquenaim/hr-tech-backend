@@ -20,6 +20,8 @@ import { Customer } from './typeorm/entities/customer';
 import { CustomerReview } from './typeorm/entities/customerReviews';
 import { Company } from './typeorm/entities/company';
 import { ProductCategory } from './typeorm/entities/productCat';
+import { DeliverymanFeedback } from './typeorm/entities/deliverymanFeedback';
+import { DeliverymanSupport } from './typeorm/entities/deliverymanSupport';
 
 
 
@@ -33,7 +35,7 @@ import { ProductCategory } from './typeorm/entities/productCat';
       username: 'postgres',
       password: 'root',
       database: 'hrtech',
-      entities: [User, Profile, Post, CustomerReview,ProductCategory, Vehicle,Company, Schedule, Order, Mngorder, Supplier, Product, Customer],
+      entities: [User, Profile, Post,DeliverymanFeedback, DeliverymanSupport, CustomerReview,ProductCategory, Vehicle,Company, Schedule, Order, Mngorder, Supplier, Product, Customer],
       synchronize: true,
     }),
     UsersModule,

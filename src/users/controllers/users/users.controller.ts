@@ -51,6 +51,16 @@ export class UsersController {
     return this.userService.getUserVehicle(email);
   }
 
+  //get schedule 
+  @Get('schedule')
+  @UsePipes(ValidationPipe)
+  getUserSchedule( 
+    @Body('email') email,
+    @Session() session,
+  ) {
+    return this.userService.getUserSchedule(email);
+  }
+
   
   //get vehicle by id
   @Get('vehicles/:id')
@@ -60,6 +70,16 @@ export class UsersController {
     @Session() session,
   ) {
     return this.userService.getVehicleById(id);
+  }
+
+  //get schedule by id
+  @Get('schedule/:id')
+  @UsePipes(ValidationPipe)
+  getScheduleById( 
+    @Param('id') id ,
+    @Session() session,
+  ) {
+    return this.userService.getScheduleById(id);
   }
 
   
@@ -202,6 +222,12 @@ export class UsersController {
     await this.userService.deleteVehicleById(id);
   }
 
+  // delete schedule by id 
+  @Delete('deleteSchedule/:id')
+  async deleteScheduleById(@Param('id', ParseIntPipe) id: number) {
+    await this.userService.deleteScheduleById(id);
+  }
+
 
 
 
@@ -268,9 +294,7 @@ export class UsersController {
     return ({ message: "file uploaded" });
   }
 
-  //schedule
-
-
+  //create schedule
   @Post(':id/schedules')
   @UsePipes(ValidationPipe)
   createUserSchedule(

@@ -213,10 +213,30 @@ async getUserVehicle(email) {
   
 }
 
+  // get schedule 
+async getUserSchedule(email) {
+
+  const users = await this.userRepository.findOneBy({ email : email });
+
+  return this.scheduleRepository.find({
+    where: {
+      user: users,
+    },
+  });
+  
+}
+
   // get vehicle by id
 async getVehicleById(id) {
 
   return await this.vehicleRepository.findOneBy({ id });
+  
+}
+
+  // get schedule by id
+async getScheduleById(id) {
+
+  return await this.scheduleRepository.findOneBy({ id });
   
 }
 
@@ -255,6 +275,18 @@ async deleteVehicleById(id: number): Promise<void> {
   }
 
   await this.vehicleRepository.delete(id);
+}
+
+//delete Schedule by id
+async deleteScheduleById(id: number): Promise<void> {
+
+  const user = await this.scheduleRepository.findOneBy({id});
+
+  if (!user) {
+    throw new NotFoundException(`User with ID ${id} not found.`);
+  }
+
+  await this.scheduleRepository.delete(user);
 }
 
 

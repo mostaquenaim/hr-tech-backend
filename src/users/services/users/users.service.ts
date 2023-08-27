@@ -100,6 +100,18 @@ async getProducts() {
       return products;
 }
 
+// upload file 
+async uploadFile(email, myFile) {
+  const user = await this.userRepository.findOneBy({ email : email });
+
+  if (user) {
+    user.filename = myFile; // Update the filename property with the new file value
+    return await this.userRepository.save(user); // Save the updated user entity
+  }
+
+  return null; // Return null if no user found with the provided email
+}
+
 // get all product categories
 async getProductCategories() {
       const options: FindManyOptions<ProductCategory> = {};

@@ -100,6 +100,26 @@ export class UsersController {
     return this.userService.getAllOrder();
   }
 
+  // uploadfile 
+  //file upload
+  @Post((':email/upload'))
+  @UseInterceptors(FileInterceptor('filename',
+    {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: function (req, file, cb) {
+          cb(null, Date.now() + file.originalname)
+        }
+      })
+    }))
+  uploadFile(
+    @Param('email') email,
+    // @Body('file') filename,
+    @UploadedFile() file: Express.Multer.File): object {
+    console.log("filename")
+    console.log(file.filename)
+    return this.userService.uploadFile(email, file.filename);
+  }
   @Get('/companyDetails')
   async getCompanyDetails() {
     return this.userService.getCompanyDetails();
@@ -266,33 +286,6 @@ export class UsersController {
 
 
 
-  //file upload
-
-
-
-  @Post(('/upload'))
-  @UseInterceptors(FileInterceptor('myfile',
-    {
-      fileFilter: (req, file, cb) => {
-        if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
-          cb(null, true);
-        else {
-          cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
-        }
-      },
-      limits: { fileSize: 30000 },
-      storage: diskStorage({
-        destination: './uploads',
-        filename: function (req, file, cb) {
-          cb(null, Date.now() + file.originalname)
-        },
-      })
-    }
-  ))
-  uploadFile(@UploadedFile() myfileobj: Express.Multer.File): object {
-    console.log(myfileobj)
-    return ({ message: "file uploaded" });
-  }
 
   //create schedule
   @Post(':id/schedules')

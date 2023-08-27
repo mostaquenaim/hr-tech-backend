@@ -12,8 +12,8 @@ import { Mngorder } from 'src/typeorm/entities/ManagementOrder';
 import { Customer } from 'src/typeorm/entities/customer';
 import { Product } from 'src/typeorm/entities/product';
 import { Supplier } from 'src/typeorm/entities/supplier';
-import { SupplierController } from './controllers/users/supplier.controller';
-import { SupplierService } from './services/users/supplier.service';
+// import { SupplierController } from './controllers/users/supplier.controller';
+// import { SupplierService } from './services/users/supplier.service';
 import { CustomerReview } from 'src/typeorm/entities/customerReviews';
 import { Company } from 'src/typeorm/entities/company';
 import { ProductCategory } from 'src/typeorm/entities/productCat';
@@ -23,7 +23,7 @@ import { DeliverymanSupport } from 'src/typeorm/entities/deliverymanSupport';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Profile,DeliverymanFeedback,DeliverymanSupport, Post, Vehicle,Company,ProductCategory, Schedule, Order, Mngorder, CustomerReview, Customer, Product, Supplier])],
-  controllers: [UsersController, SupplierController],
-  providers: [UsersService, SupplierService],
+  controllers: [UsersController],
+  providers: [UsersService],
 })
 export class UsersModule {}

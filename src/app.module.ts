@@ -13,7 +13,7 @@ import { Order } from './typeorm/entities/Order';
 import { Mngorder } from './typeorm/entities/ManagementOrder';
 
 import { Service } from './.service';
-import { SupplierController } from './users/controllers/users/supplier.controller';
+// import { SupplierController } from './users/controllers/users/supplier.controller';
 import { Supplier } from './typeorm/entities/supplier';
 import { Product } from './typeorm/entities/product';
 import { Customer } from './typeorm/entities/customer';

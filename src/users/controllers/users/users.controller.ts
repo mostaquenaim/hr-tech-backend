@@ -154,6 +154,12 @@ export class UsersController {
   //   res.sendFile(name,{ root: './uploads' })
   // }
 
+  @Get('/getImage/:name')
+  getImage(@Param('name') name, @Res() res) {
+    res.sendFile(name, { root: './uploads' })
+  }
+
+
 
 
 

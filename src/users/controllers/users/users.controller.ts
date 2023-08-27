@@ -42,20 +42,22 @@ export class UsersController {
 
   
   //get vehicle by 
-  @Get('vehicles')
+  @Get('getVehiclesByEmail/:email')
   @UsePipes(ValidationPipe)
   getVehicle( 
-    @Body('email') email,
+    @Param('email') email,
+    // @Body('email') email,
     @Session() session,
   ) {
     return this.userService.getUserVehicle(email);
   }
 
   //get schedule 
-  @Get('schedule')
+  @Get('schedule/:email')
   @UsePipes(ValidationPipe)
   getUserSchedule( 
-    @Body('email') email,
+    // @Body('email') email,
+    @Param('email') email ,
     @Session() session,
   ) {
     return this.userService.getUserSchedule(email);
@@ -63,7 +65,7 @@ export class UsersController {
 
   
   //get vehicle by id
-  @Get('vehicles/:id')
+  @Get('getVehiclesById/:id')
   @UsePipes(ValidationPipe)
   getVehicleById( 
     @Param('id') id ,
@@ -73,7 +75,7 @@ export class UsersController {
   }
 
   //get schedule by id
-  @Get('schedule/:id')
+  @Get('getScheduleByID/:id')
   @UsePipes(ValidationPipe)
   getScheduleById( 
     @Param('id') id ,
@@ -83,9 +85,11 @@ export class UsersController {
   }
 
   
-  @Get('findUserByEmail')
-  getUserByEmail(@Body() body) {
-    return this.userService.findUserByEmail(body);
+  @Get('findUserByEmail/:email')
+  getUserByEmail(
+    @Param('email') email,
+    @Body() body) {
+    return this.userService.findUserByEmail(email);
   }
 
 

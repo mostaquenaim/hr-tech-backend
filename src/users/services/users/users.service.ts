@@ -353,6 +353,7 @@ async createUserVehicle(
     ...createUserVehicleDetails,
     user,
   });
+  console.log(newVehicle)
   return this.vehicleRepository.save(newVehicle);
 }
 
@@ -436,11 +437,12 @@ async signIn(signInDto: SignInDto): Promise<User> {
 
 // find user by email 
 
-async findUserByEmail(myDto): Promise<User> {
-  const user = await this.userRepository.findOneBy({email : myDto.email});
+async findUserByEmail(email): Promise<User> {
+
+  const user = await this.userRepository.findOneBy({email : email});
 
   if (!user) {
-    throw new NotFoundException(`User with ID ${myDto.email} not found.`);
+    throw new NotFoundException(`User with ID ${email} not found.`);
   }
 
   return  user;
